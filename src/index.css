@@ -4,50 +4,60 @@
 @tailwind components;
 @tailwind utilities;
 
-/* VJ Hub Design System - Steve Jobs inspired minimalism */
+/* VJ Hub Design System - Innovative Steve Jobs minimalism */
 
 @layer base {
   :root {
-    /* Core Brand Colors - Monochrome + Teal Accent */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 4%;
+    /* Core Innovation Colors - Premium monochrome with electric blue accent */
+    --background: 0 0% 99%;
+    --foreground: 220 10% 9%;
     
-    /* VJ Hub Brand Colors */
-    --vj-primary: 0 0% 4%; /* Near-black for primary text */
+    /* VJ Hub Brand Colors - Modern Innovation Theme */
+    --vj-primary: 220 10% 9%; /* Deep charcoal for authority */
     --vj-primary-foreground: 0 0% 98%;
-    --vj-muted: 0 0% 42%; /* #6B7280 equivalent */
-    --vj-muted-foreground: 0 0% 64%;
-    --vj-accent: 177 100% 33%; /* #00A896 - Soft teal */
+    --vj-muted: 220 5% 50%; /* Sophisticated gray */
+    --vj-muted-foreground: 220 5% 65%;
+    --vj-accent: 217 92% 59%; /* Electric blue for innovation */
     --vj-accent-foreground: 0 0% 100%;
-    --vj-neutral: 0 0% 97%; /* #F7F7F8 - Neutral card bg */
-    --vj-border: 0 0% 91%;
+    --vj-accent-light: 217 92% 96%; /* Ultra light blue for backgrounds */
+    --vj-neutral: 220 14% 98%; /* Warmer neutral */
+    --vj-border: 220 13% 93%;
+    --vj-surface: 0 0% 100%; /* Pure white for premium feel */
+    
+    /* Innovation gradients */
+    --vj-gradient-primary: linear-gradient(135deg, hsl(217, 92%, 59%), hsl(217, 92%, 69%));
+    --vj-gradient-subtle: linear-gradient(135deg, hsl(220, 14%, 99%), hsl(220, 14%, 96%));
+    --vj-gradient-innovation: linear-gradient(135deg, hsl(217, 92%, 59%) 0%, hsl(280, 92%, 69%) 100%);
     
     /* Shadcn mappings */
-    --primary: 177 100% 33%;
+    --primary: 217 92% 59%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 97%;
-    --secondary-foreground: 0 0% 4%;
-    --muted: 0 0% 97%;
-    --muted-foreground: 0 0% 42%;
-    --accent: 177 100% 33%;
+    --secondary: 220 14% 98%;
+    --secondary-foreground: 220 10% 9%;
+    --muted: 220 14% 98%;
+    --muted-foreground: 220 5% 50%;
+    --accent: 217 92% 59%;
     --accent-foreground: 0 0% 100%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 4%;
+    --card-foreground: 220 10% 9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 4%;
-    --border: 0 0% 91%;
-    --input: 0 0% 91%;
-    --ring: 177 100% 33%;
+    --popover-foreground: 220 10% 9%;
+    --border: 220 13% 93%;
+    --input: 220 13% 93%;
+    --ring: 217 92% 59%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --radius: 0.75rem;
     
-    /* Spacing & Shadows */
-    --vj-shadow-subtle: 0 6px 20px rgba(11, 11, 11, 0.06);
-    --vj-shadow-card: 0 4px 12px rgba(11, 11, 11, 0.08);
-    --vj-radius-base: 12px;
-    --vj-radius-button: 10px;
-    --vj-radius-large: 20px;
+    /* Premium shadows & effects */
+    --vj-shadow-subtle: 0 2px 24px -4px rgba(20, 68, 185, 0.08);
+    --vj-shadow-card: 0 8px 32px -8px rgba(20, 68, 185, 0.12);
+    --vj-shadow-innovation: 0 16px 64px -12px rgba(20, 68, 185, 0.15);
+    --vj-shadow-glow: 0 0 40px rgba(20, 68, 185, 0.15);
+    --vj-radius-base: 16px;
+    --vj-radius-button: 12px;
+    --vj-radius-large: 24px;
+    --vj-radius-xl: 32px;
   }
 
   /* Typography */
@@ -61,85 +71,158 @@
     @apply text-vj-primary;
   }
 
-  /* Animations */
+  /* Premium Animations */
   @keyframes fade-in {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
   }
 
   @keyframes scale-in {
-    from { opacity: 0; transform: scale(0.95); }
+    from { opacity: 0; transform: scale(0.92); }
     to { opacity: 1; transform: scale(1); }
   }
 
   @keyframes counter-up {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(24px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
+  @keyframes innovation-pulse {
+    0%, 100% { box-shadow: var(--vj-shadow-card); }
+    50% { box-shadow: var(--vj-shadow-innovation); }
+  }
+
+  @keyframes floating {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  @keyframes glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(20, 68, 185, 0.1); }
+    50% { box-shadow: 0 0 40px rgba(20, 68, 185, 0.2); }
+  }
+
   .animate-fade-in {
-    animation: fade-in 0.6s ease-out;
+    animation: fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .animate-scale-in {
-    animation: scale-in 0.4s ease-out;
+    animation: scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .animate-counter {
-    animation: counter-up 0.8s ease-out;
+    animation: counter-up 1s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* Hover effects */
+  .animate-floating {
+    animation: floating 6s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 4s ease-in-out infinite;
+  }
+
+  /* Premium Hover effects */
   .hover-lift {
-    @apply transition-all duration-300 ease-out;
+    @apply transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .hover-lift:hover {
-    @apply transform -translate-y-1;
+    @apply transform -translate-y-2 scale-105;
+    box-shadow: var(--vj-shadow-innovation);
+  }
+
+  .hover-scale {
+    @apply transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-scale:hover {
+    @apply transform scale-105;
     box-shadow: var(--vj-shadow-card);
+  }
+
+  .hover-glow {
+    @apply transition-all duration-400 cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-glow:hover {
+    box-shadow: var(--vj-shadow-glow);
   }
 }
 
 @layer components {
-  /* Hero Section */
+  /* Hero Section - Innovation focused */
   .hero-quote {
-    @apply font-playfair text-5xl md:text-6xl lg:text-7xl font-semibold text-vj-primary leading-tight tracking-tight;
+    @apply font-playfair text-5xl md:text-6xl lg:text-8xl font-bold text-vj-primary leading-[0.9] tracking-[-0.02em];
+    background: var(--vj-gradient-innovation);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   
   .hero-subtitle {
-    @apply text-lg md:text-xl text-vj-muted font-light;
+    @apply text-xl md:text-2xl text-vj-muted font-light leading-relaxed max-w-3xl;
   }
 
-  /* Cards */
+  /* Premium Cards */
   .vj-card {
-    @apply bg-card border border-vj-border rounded-xl p-6 hover-lift;
+    @apply bg-vj-surface border border-vj-border rounded-vj-large p-8 hover-lift backdrop-blur-sm;
     box-shadow: var(--vj-shadow-subtle);
   }
 
   .vj-card-minimal {
-    @apply bg-vj-neutral rounded-xl p-6 border-0 hover-lift;
+    @apply bg-vj-surface rounded-vj-large p-8 border border-vj-border/50 hover-scale backdrop-blur-sm;
+    background: linear-gradient(135deg, hsl(var(--vj-surface)), hsl(var(--vj-neutral)));
   }
 
-  /* Buttons */
+  .vj-card-innovation {
+    @apply relative overflow-hidden rounded-vj-xl p-8 hover-glow;
+    background: var(--vj-gradient-subtle);
+    border: 1px solid hsl(var(--vj-border));
+  }
+
+  .vj-card-innovation::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-500;
+    background: var(--vj-gradient-primary);
+    opacity: 0.02;
+  }
+
+  .vj-card-innovation:hover::before {
+    opacity: 0.05;
+  }
+
+  /* Modern Buttons */
   .btn-primary {
-    @apply bg-vj-accent text-vj-accent-foreground rounded-[10px] px-6 py-3 font-medium transition-all duration-200 hover:scale-105 hover:shadow-lg;
+    @apply relative overflow-hidden rounded-vj-button px-8 py-4 font-semibold text-white transition-all duration-300;
+    background: var(--vj-gradient-primary);
+    box-shadow: var(--vj-shadow-subtle);
+  }
+
+  .btn-primary:hover {
+    @apply transform scale-105;
+    box-shadow: var(--vj-shadow-innovation);
   }
 
   .btn-secondary {
-    @apply bg-vj-neutral text-vj-primary rounded-[10px] px-6 py-3 font-medium transition-all duration-200 hover:bg-vj-border;
+    @apply bg-vj-surface text-vj-primary rounded-vj-button px-8 py-4 font-semibold border border-vj-border transition-all duration-300 hover:border-vj-accent hover:text-vj-accent;
   }
 
   .btn-ghost {
-    @apply text-vj-muted rounded-[10px] px-6 py-3 font-medium transition-all duration-200 hover:text-vj-primary hover:bg-vj-neutral;
+    @apply text-vj-muted rounded-vj-button px-8 py-4 font-medium transition-all duration-300 hover:text-vj-accent hover:bg-vj-accent-light;
   }
 
-  /* Counters */
+  /* Innovation Counters */
   .counter-number {
-    @apply text-4xl md:text-5xl font-bold text-vj-accent font-inter;
+    @apply text-5xl md:text-6xl lg:text-7xl font-black font-inter;
+    background: var(--vj-gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .counter-label {
-    @apply text-sm md:text-base text-vj-muted font-medium uppercase tracking-wide;
+    @apply text-base md:text-lg text-vj-muted font-medium tracking-wide;
   }
 
   /* Status badges */

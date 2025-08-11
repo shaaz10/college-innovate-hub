@@ -78,13 +78,15 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				// VJ Hub Brand Colors
+				// VJ Hub Innovation Colors
 				'vj-primary': 'hsl(var(--vj-primary))',
 				'vj-muted': 'hsl(var(--vj-muted))',
 				'vj-accent': 'hsl(var(--vj-accent))',
 				'vj-accent-foreground': 'hsl(var(--vj-accent-foreground))',
+				'vj-accent-light': 'hsl(var(--vj-accent-light))',
 				'vj-neutral': 'hsl(var(--vj-neutral))',
 				'vj-border': 'hsl(var(--vj-border))',
+				'vj-surface': 'hsl(var(--vj-surface))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -93,10 +95,13 @@ export default {
 				'vj-base': 'var(--vj-radius-base)',
 				'vj-button': 'var(--vj-radius-button)',
 				'vj-large': 'var(--vj-radius-large)',
+				'vj-xl': 'var(--vj-radius-xl)',
 			},
 			boxShadow: {
 				'vj-subtle': 'var(--vj-shadow-subtle)',
 				'vj-card': 'var(--vj-shadow-card)',
+				'vj-innovation': 'var(--vj-shadow-innovation)',
+				'vj-glow': 'var(--vj-shadow-glow)',
 			},
 			keyframes: {
 				'accordion-down': {
@@ -116,16 +121,26 @@ export default {
 					'100%': { opacity: '1', transform: 'scale(1)' }
 				},
 				'counter-up': {
-					'0%': { opacity: '0', transform: 'translateY(20px)' },
+					'0%': { opacity: '0', transform: 'translateY(24px)' },
 					'100%': { opacity: '1', transform: 'translateY(0)' }
+				},
+				'floating': {
+					'0%, 100%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-8px)' }
+				},
+				'glow': {
+					'0%, 100%': { boxShadow: '0 0 20px rgba(20, 68, 185, 0.1)' },
+					'50%': { boxShadow: '0 0 40px rgba(20, 68, 185, 0.2)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
-				'fade-in': 'fade-in 0.6s ease-out',
-				'scale-in': 'scale-in 0.4s ease-out',
-				'counter-up': 'counter-up 0.8s ease-out',
+				'fade-in': 'fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+				'scale-in': 'scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+				'counter-up': 'counter-up 1s cubic-bezier(0.16, 1, 0.3, 1)',
+				'floating': 'floating 6s ease-in-out infinite',
+				'glow': 'glow 4s ease-in-out infinite',
 			}
 		}
 	},
