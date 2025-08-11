@@ -82,6 +82,7 @@ export default {
 				'vj-primary': 'hsl(var(--vj-primary))',
 				'vj-muted': 'hsl(var(--vj-muted))',
 				'vj-accent': 'hsl(var(--vj-accent))',
+				'vj-accent-foreground': 'hsl(var(--vj-accent-foreground))',
 				'vj-neutral': 'hsl(var(--vj-neutral))',
 				'vj-border': 'hsl(var(--vj-border))',
 			},
