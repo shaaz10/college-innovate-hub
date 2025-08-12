@@ -120,7 +120,8 @@
     --destructive-foreground: 0 0% 98%;
   }
     
-    /* Premium shadows & effects */
+  /* Premium shadows & effects */
+  :root {
     --vj-shadow-subtle: 0 2px 24px -4px rgba(20, 68, 185, 0.08);
     --vj-shadow-card: 0 8px 32px -8px rgba(20, 68, 185, 0.12);
     --vj-shadow-innovation: 0 16px 64px -12px rgba(20, 68, 185, 0.15);
