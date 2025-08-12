@@ -112,73 +112,88 @@ const Ideas = () => {
         {/* Ideas Grid */}
         <div className="ideas-grid">
           {filteredIdeas.map(idea => (
-            <div key={idea.id} className="vj-card">
-              <div className="flex items-start gap-4 mb-4">
-                <UpvoteButton 
-                  upvotes={idea.upvotes} 
-                  downvotes={idea.downvotes}
-                  showDownvote={true}
-                />
+            <div key={idea.id} className="vj-card-idea group">
+              {/* Idea Header with Creative Visual */}
+              <div className="aspect-video relative overflow-hidden rounded-vj-large mb-6 bg-gradient-to-br from-idea-light to-idea-primary/20">
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-20 h-20 bg-idea-primary/30 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <span className="text-3xl">💡</span>
+                  </div>
+                </div>
+                <div className="absolute top-4 left-4">
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-black/70 backdrop-blur-sm rounded-full">
+                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    <span className="text-white text-xs font-medium">Idea</span>
+                  </div>
+                </div>
+                <div className="absolute top-4 right-4">
+                  <StatusBadge stage={idea.stage} />
+                </div>
+                <div className="absolute bottom-4 left-4">
+                  <div className="flex items-center gap-1 text-white bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full">
+                    <MessageCircle size={12} />
+                    <span className="text-xs">{idea.comments}</span>
+                  </div>
+                </div>
+                <div className="absolute bottom-4 right-4">
+                  <UpvoteButton 
+                    upvotes={idea.upvotes} 
+                    downvotes={idea.downvotes}
+                    showDownvote={true}
+                    className="bg-white/90 backdrop-blur-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold text-vj-primary mb-2 group-hover:text-idea-primary transition-colors">
+                  {idea.title}
+                </h3>
                 
-                <div className="flex-1">
-                  <div className="flex items-center justify-between mb-3">
-                    <StatusBadge stage={idea.stage} />
-                    <div className="flex items-center gap-1 text-xs text-vj-muted">
-                      <MessageCircle size={14} />
-                      <span>{idea.comments}</span>
-                    </div>
-                  </div>
-                  
-                  <h3 className="text-xl font-semibold text-vj-primary mb-2">
-                    {idea.title}
-                  </h3>
-                  
-                  <p className="text-vj-muted text-sm leading-relaxed mb-4">
-                    {idea.description}
-                  </p>
-                  
-                  {/* Team */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <Users size={16} className="text-vj-muted" />
-                    <div className="flex -space-x-2">
-                      {idea.team.slice(0, 3).map((member, index) => (
-                        <div 
-                          key={index}
-                          className="w-8 h-8 bg-vj-accent/10 border-2 border-background rounded-full flex items-center justify-center text-xs font-medium text-vj-accent"
-                        >
-                          {member.name.split(' ').map(n => n[0]).join('')}
+                <p className="text-vj-muted leading-relaxed">
+                  {idea.description}
+                </p>
+                
+                {/* Team */}
+                <div>
+                  <h4 className="text-sm font-medium text-vj-primary mb-3 flex items-center gap-2">
+                    <Users size={16} className="text-idea-primary" />
+                    Team Members
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {idea.team.map((member, idx) => (
+                      <div key={idx} className="flex items-center gap-2 bg-idea-light border border-idea-primary/20 px-3 py-2 rounded-full hover:bg-idea-primary/10 transition-colors">
+                        <div className="w-6 h-6 rounded-full bg-idea-primary/20 flex items-center justify-center">
+                          <span className="text-xs font-bold text-idea-primary">{member.name[0]}</span>
                         </div>
-                      ))}
-                      {idea.team.length > 3 && (
-                        <div className="w-8 h-8 bg-vj-muted/10 border-2 border-background rounded-full flex items-center justify-center text-xs text-vj-muted">
-                          +{idea.team.length - 3}
+                        <div className="text-xs">
+                          <div className="font-medium text-idea-primary">{member.name}</div>
+                          <div className="text-idea-muted">{member.role}</div>
                         </div>
-                      )}
-                    </div>
-                    <span className="text-xs text-vj-muted">
-                      {idea.team.length} member{idea.team.length !== 1 ? 's' : ''}
-                    </span>
+                      </div>
+                    ))}
                   </div>
-                  
-                  {/* Mentor */}
-                  {idea.mentor && (
-                    <div className="mb-4">
-                      <Badge variant="outline" className="text-xs">
-                        Mentor: {idea.mentor}
-                      </Badge>
-                    </div>
-                  )}
-                  
-                  <div className="flex gap-2">
-                    <Link to={`/ideas/${idea.id}`}>
-                      <Button size="sm" className="btn-primary">
-                        View Details
-                      </Button>
-                    </Link>
-                    <Button size="sm" variant="outline">
-                      Contact Team
+                </div>
+                
+                {/* Mentor */}
+                {idea.mentor && (
+                  <div className="p-3 bg-idea-light rounded-lg border border-idea-primary/20">
+                    <p className="text-sm">
+                      <span className="font-medium text-idea-primary">🎓 Mentor:</span> 
+                      <span className="text-vj-muted ml-1">{idea.mentor}</span>
+                    </p>
+                  </div>
+                )}
+                
+                <div className="flex gap-3 pt-2">
+                  <Link to={`/ideas/${idea.id}`} className="flex-1">
+                    <Button size="sm" className="w-full bg-idea-primary hover:bg-idea-primary/90 text-white">
+                      View Details
                     </Button>
-                  </div>
+                  </Link>
+                  <Button size="sm" variant="outline" className="flex-1 border-idea-primary/30 text-idea-primary hover:bg-idea-light">
+                    Contact Team
+                  </Button>
                 </div>
               </div>
             </div>

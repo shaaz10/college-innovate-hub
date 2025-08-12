@@ -89,102 +89,129 @@ const Startups = () => {
         </div>
         
         {/* Startups Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
           {filteredStartups.map(startup => (
-            <div key={startup.id} className="vj-card">
+            <div key={startup.id} className="vj-card-startup group">
+              {/* Startup Logo/Header */}
               <div className="flex items-start gap-4 mb-6">
-                <UpvoteButton upvotes={startup.upvotes} />
-                
+                <div className="w-16 h-16 rounded-vj-large overflow-hidden bg-startup-light border-2 border-startup-primary/20 flex items-center justify-center group-hover:border-startup-primary/40 transition-colors">
+                  <img 
+                    src={`/src/assets/startup-logo-${startup.id}.png`}
+                    alt={`${startup.name} logo`}
+                    className="w-12 h-12 object-contain"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const fallback = target.nextElementSibling as HTMLElement;
+                      if (fallback) {
+                        fallback.textContent = startup.name.slice(0, 2).toUpperCase();
+                        fallback.style.display = 'block';
+                      }
+                    }}
+                  />
+                  <span className="text-lg font-bold text-startup-primary hidden"></span>
+                </div>
                 <div className="flex-1">
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-start justify-between">
+                    <h3 className="text-xl font-bold text-vj-primary group-hover:text-startup-primary transition-colors leading-tight">
+                      {startup.name}
+                    </h3>
                     <StatusBadge stage={startup.stage} />
-                    <Badge variant="outline" className="text-xs">
-                      {startup.fundingStatus}
-                    </Badge>
                   </div>
-                  
-                  <h3 className="text-2xl font-semibold text-vj-primary mb-2">
-                    {startup.name}
-                  </h3>
-                  
-                  <p className="text-vj-muted leading-relaxed mb-4">
-                    {startup.description}
-                  </p>
-                  
-                  {/* Team */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <Users size={16} className="text-vj-muted" />
-                    <div className="flex -space-x-2">
-                      {startup.team.slice(0, 3).map((member, index) => (
-                        <div 
-                          key={index}
-                          className="w-8 h-8 bg-vj-accent/10 border-2 border-background rounded-full flex items-center justify-center text-xs font-medium text-vj-accent"
-                          title={`${member.name} - ${member.role}`}
-                        >
-                          {member.name.split(' ').map(n => n[0]).join('')}
-                        </div>
-                      ))}
-                      {startup.team.length > 3 && (
-                        <div className="w-8 h-8 bg-vj-muted/10 border-2 border-background rounded-full flex items-center justify-center text-xs text-vj-muted">
-                          +{startup.team.length - 3}
-                        </div>
-                      )}
+                  <div className="mt-2 flex items-center gap-2">
+                    <UpvoteButton upvotes={startup.upvotes} className="scale-75" />
+                    <div className="flex items-center gap-1 px-2 py-1 bg-startup-light text-startup-primary text-xs font-medium rounded-full">
+                      🚀 <span>Startup</span>
                     </div>
-                    <span className="text-xs text-vj-muted">
-                      {startup.team.length} member{startup.team.length !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                  
-                  {/* Schemes */}
-                  {startup.schemes.length > 0 && (
-                    <div className="mb-4">
-                      <p className="text-xs text-vj-muted mb-2">Participated in:</p>
-                      <div className="flex flex-wrap gap-1">
-                        {startup.schemes.map((scheme, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {scheme}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Milestones Preview */}
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <TrendingUp size={16} className="text-vj-muted" />
-                      <span className="text-sm font-medium text-vj-primary">Recent Milestones</span>
-                    </div>
-                    <div className="space-y-2">
-                      {startup.milestones.slice(-2).map((milestone, index) => (
-                        <div key={index} className="flex items-center gap-2 text-sm">
-                          <div className={`w-2 h-2 rounded-full ${milestone.completed ? 'bg-vj-accent' : 'bg-vj-muted/30'}`}></div>
-                          <span className={milestone.completed ? 'text-vj-primary' : 'text-vj-muted'}>
-                            {milestone.title}
-                          </span>
-                          <span className="text-xs text-vj-muted ml-auto">
-                            {new Date(milestone.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Link to={`/startups/${startup.id}`}>
-                      <Button size="sm" className="btn-primary">
-                        View Details
-                      </Button>
-                    </Link>
-                    
-                    {startup.onePager && (
-                      <Button size="sm" variant="outline" className="gap-2">
-                        <Download size={14} />
-                        One-Pager
-                      </Button>
-                    )}
                   </div>
                 </div>
+              </div>
+              
+              <p className="text-vj-muted leading-relaxed mb-6">
+                {startup.description}
+              </p>
+              
+              {/* Funding */}
+              <div className="mb-4 p-3 bg-startup-light rounded-lg border border-startup-primary/20">
+                <p className="text-sm">
+                  <span className="font-medium text-startup-primary">💰 Funding:</span>
+                  <span className="text-vj-muted ml-1">{startup.fundingStatus}</span>
+                </p>
+              </div>
+              
+              {/* Team */}
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-vj-primary mb-3 flex items-center gap-2">
+                  <Users size={16} className="text-startup-primary" />
+                  Team ({startup.team.length})
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {startup.team.slice(0, 3).map((member, idx) => (
+                    <div key={idx} className="flex items-center gap-2 bg-startup-light border border-startup-primary/20 px-3 py-1.5 rounded-full hover:bg-startup-primary/10 transition-colors">
+                      <div className="w-5 h-5 rounded-full bg-startup-primary/20 flex items-center justify-center">
+                        <span className="text-xs font-bold text-startup-primary">{member.name[0]}</span>
+                      </div>
+                      <div className="text-xs">
+                        <div className="font-medium text-startup-primary">{member.name}</div>
+                        <div className="text-startup-muted">{member.role}</div>
+                      </div>
+                    </div>
+                  ))}
+                  {startup.team.length > 3 && (
+                    <div className="flex items-center px-3 py-1.5 bg-startup-light border border-startup-primary/20 rounded-full">
+                      <span className="text-xs text-startup-primary font-medium">+{startup.team.length - 3} more</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Schemes */}
+              {startup.schemes.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs text-startup-muted mb-2">🏆 Programs:</p>
+                  <div className="flex flex-wrap gap-1">
+                    {startup.schemes.map((scheme, index) => (
+                      <Badge key={index} variant="outline" className="text-xs border-startup-primary/30 text-startup-primary">
+                        {scheme}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Recent Milestones */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <TrendingUp size={16} className="text-startup-primary" />
+                  <span className="text-sm font-medium text-vj-primary">Recent Milestones</span>
+                </div>
+                <div className="space-y-2">
+                  {startup.milestones.slice(-2).map((milestone, index) => (
+                    <div key={index} className="flex items-center gap-2 text-xs">
+                      <div className={`w-2 h-2 rounded-full ${milestone.completed ? 'bg-startup-primary' : 'bg-startup-muted/30'}`}></div>
+                      <span className={milestone.completed ? 'text-vj-primary font-medium' : 'text-vj-muted'}>
+                        {milestone.title}
+                      </span>
+                      <span className="text-startup-muted ml-auto">
+                        {new Date(milestone.date).toLocaleDateString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <Link to={`/startups/${startup.id}`} className="flex-1">
+                  <Button size="sm" className="w-full bg-startup-primary hover:bg-startup-primary/90 text-white">
+                    View Details
+                  </Button>
+                </Link>
+                {startup.onePager && (
+                  <Button size="sm" variant="outline" className="flex-1 border-startup-primary/30 text-startup-primary hover:bg-startup-light gap-2">
+                    <Download size={12} />
+                    One-Pager
+                  </Button>
+                )}
               </div>
             </div>
           ))}

@@ -152,7 +152,7 @@ export const mockStartups: Startup[] = [
   {
     id: "1",
     name: "StudySpace",
-    description: "AI-powered study room booking and collaborative learning platform",
+    description: "AI-powered study room booking and collaborative learning platform that revolutionizes campus study environments",
     team: [
       { name: "Michael Chen", role: "CEO", avatar: "/api/placeholder/64/64" },
       { name: "Sofia Rodriguez", role: "CTO", avatar: "/api/placeholder/64/64" },
@@ -173,7 +173,7 @@ export const mockStartups: Startup[] = [
   {
     id: "2",
     name: "EcoTrack Campus",
-    description: "Sustainability tracking and carbon footprint reduction for college campuses",
+    description: "Sustainability tracking and carbon footprint reduction platform designed specifically for college campuses worldwide",
     team: [
       { name: "Taylor Johnson", role: "CEO", avatar: "/api/placeholder/64/64" },
       { name: "Arjun Kapoor", role: "Environmental Engineer", avatar: "/api/placeholder/64/64" }
@@ -187,6 +187,48 @@ export const mockStartups: Startup[] = [
       { title: "3 Campus Deployments", date: "2024-04-15", completed: true },
       { title: "Seed Funding", date: "2024-07-01", completed: true }
     ]
+  }
+];
+
+// Mock comments data
+export const mockComments = [
+  {
+    id: "1",
+    author: "Sarah Johnson",
+    avatar: "/api/placeholder/32/32",
+    content: "This is exactly what our campus needs! The food waste problem is so real and visible every day.",
+    timestamp: "2 hours ago",
+    likes: 12,
+    isLiked: false,
+    replies: [
+      {
+        id: "1-1",
+        author: "Mike Chen",
+        avatar: "/api/placeholder/32/32",
+        content: "Totally agree! We should also consider partnerships with local food banks.",
+        timestamp: "1 hour ago",
+        likes: 5,
+        isLiked: true,
+      }
+    ]
+  },
+  {
+    id: "2",
+    author: "Alex Rivera",
+    avatar: "/api/placeholder/32/32",
+    content: "Have you considered the logistical challenges of food pickup timing? Students have unpredictable schedules.",
+    timestamp: "4 hours ago",
+    likes: 8,
+    isLiked: false,
+  },
+  {
+    id: "3",
+    author: "Emma Davis",
+    avatar: "/api/placeholder/32/32",
+    content: "This could work great with a mobile app for real-time notifications!",
+    timestamp: "6 hours ago",
+    likes: 15,
+    isLiked: true,
   }
 ];
 

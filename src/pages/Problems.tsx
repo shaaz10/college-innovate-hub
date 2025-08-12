@@ -113,44 +113,59 @@ const Problems = () => {
         {/* Problems Grid */}
         <div className="problems-grid">
           {filteredProblems.map(problem => (
-            <div key={problem.id} className="vj-card group">
-              <div className="flex items-start gap-4">
-                <UpvoteButton upvotes={problem.upvotes} className="mt-1" />
+            <div key={problem.id} className="vj-card-problem group">
+              {/* Problem Image */}
+              <div className="aspect-video relative overflow-hidden rounded-vj-large mb-6">
+                <img 
+                  src={`/src/assets/${problem.image}`}
+                  alt={problem.title}
+                  className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                <div className="absolute top-4 left-4">
+                  <div className="flex items-center gap-2 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full">
+                    <span className="w-2 h-2 bg-orange-400 rounded-full"></span>
+                    <span className="text-white text-xs font-medium">Problem</span>
+                  </div>
+                </div>
+                <div className="absolute bottom-4 right-4">
+                  <UpvoteButton upvotes={problem.upvotes} className="bg-white/90 backdrop-blur-sm" />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  {problem.tags.map(tag => (
+                    <Badge key={tag} variant="outline" className="text-xs border-problem-primary/30 text-problem-primary">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
                 
-                <div className="flex-1">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {problem.tags.map(tag => (
-                      <Badge key={tag} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  
-                  <h3 className="text-lg font-semibold text-vj-primary mb-2 group-hover:text-vj-accent transition-colors">
-                    {problem.title}
-                  </h3>
-                  
-                  <p className="text-vj-muted text-sm leading-relaxed mb-4">
-                    {problem.excerpt}
-                  </p>
-                  
-                  <div className="flex items-center justify-between text-xs text-vj-muted">
-                    <span>by {problem.author}</span>
-                    <span>{problem.comments} comments</span>
-                  </div>
-                  
-                  <div className="flex gap-2 mt-4">
-                    <Link to={`/problems/${problem.id}`}>
-                      <Button size="sm" className="btn-primary">
-                        View Details
-                      </Button>
-                    </Link>
-                    <Link to={`/ideas?problem=${problem.id}`}>
-                      <Button size="sm" variant="outline">
-                        View Ideas
-                      </Button>
-                    </Link>
-                  </div>
+                <h3 className="text-xl font-bold text-vj-primary mb-2 group-hover:text-problem-primary transition-colors">
+                  {problem.title}
+                </h3>
+                
+                <p className="text-vj-muted leading-relaxed">
+                  {problem.excerpt}
+                </p>
+                
+                <div className="flex items-center justify-between text-sm text-vj-muted pt-4 border-t border-vj-border/50">
+                  <span>by {problem.author}</span>
+                  <span>{problem.comments} comments</span>
+                </div>
+                
+                <div className="flex gap-3 pt-2">
+                  <Link to={`/problems/${problem.id}`} className="flex-1">
+                    <Button size="sm" className="w-full bg-problem-primary hover:bg-problem-primary/90 text-white">
+                      View Details
+                    </Button>
+                  </Link>
+                  <Link to={`/ideas?problem=${problem.id}`} className="flex-1">
+                    <Button size="sm" variant="outline" className="w-full border-problem-primary/30 text-problem-primary hover:bg-problem-light">
+                      View Ideas
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>

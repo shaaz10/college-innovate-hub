@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   const location = useLocation();
@@ -47,6 +48,7 @@ const Navbar = () => {
           
           {/* Actions */}
           <div className="flex items-center space-x-4">
+            <ThemeToggle />
             <Link to="/login">
               <Button variant="ghost" size="sm" className="text-vj-muted hover:text-vj-primary">
                 Login

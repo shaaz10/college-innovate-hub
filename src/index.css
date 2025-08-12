@@ -8,26 +8,44 @@
 
 @layer base {
   :root {
-    /* Core Innovation Colors - Premium monochrome with electric blue accent */
+    /* Core Light Mode Colors */
     --background: 0 0% 99%;
     --foreground: 220 10% 9%;
     
-    /* VJ Hub Brand Colors - Modern Innovation Theme */
-    --vj-primary: 220 10% 9%; /* Deep charcoal for authority */
+    /* VJ Hub Brand Colors - Light Mode */
+    --vj-primary: 220 10% 9%;
     --vj-primary-foreground: 0 0% 98%;
-    --vj-muted: 220 5% 50%; /* Sophisticated gray */
+    --vj-muted: 220 5% 50%;
     --vj-muted-foreground: 220 5% 65%;
-    --vj-accent: 217 92% 59%; /* Electric blue for innovation */
+    --vj-accent: 217 92% 59%;
     --vj-accent-foreground: 0 0% 100%;
-    --vj-accent-light: 217 92% 96%; /* Ultra light blue for backgrounds */
-    --vj-neutral: 220 14% 98%; /* Warmer neutral */
+    --vj-accent-light: 217 92% 96%;
+    --vj-neutral: 220 14% 98%;
     --vj-border: 220 13% 93%;
-    --vj-surface: 0 0% 100%; /* Pure white for premium feel */
+    --vj-surface: 0 0% 100%;
+    
+    /* Problem-specific colors (Orange theme) */
+    --problem-primary: 25 95% 53%;
+    --problem-light: 25 95% 97%;
+    --problem-muted: 25 30% 60%;
+    
+    /* Idea-specific colors (Green theme) */
+    --idea-primary: 142 76% 36%;
+    --idea-light: 142 76% 96%;
+    --idea-muted: 142 30% 50%;
+    
+    /* Startup-specific colors (Purple theme) */
+    --startup-primary: 263 85% 56%;
+    --startup-light: 263 85% 97%;
+    --startup-muted: 263 30% 60%;
     
     /* Innovation gradients */
     --vj-gradient-primary: linear-gradient(135deg, hsl(217, 92%, 59%), hsl(217, 92%, 69%));
     --vj-gradient-subtle: linear-gradient(135deg, hsl(220, 14%, 99%), hsl(220, 14%, 96%));
     --vj-gradient-innovation: linear-gradient(135deg, hsl(217, 92%, 59%) 0%, hsl(280, 92%, 69%) 100%);
+    --vj-gradient-problem: linear-gradient(135deg, hsl(25, 95%, 53%) 0%, hsl(45, 95%, 60%) 100%);
+    --vj-gradient-idea: linear-gradient(135deg, hsl(142, 76%, 36%) 0%, hsl(120, 76%, 45%) 100%);
+    --vj-gradient-startup: linear-gradient(135deg, hsl(263, 85%, 56%) 0%, hsl(280, 85%, 65%) 100%);
     
     /* Shadcn mappings */
     --primary: 217 92% 59%;
@@ -48,6 +66,59 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
     --radius: 0.75rem;
+  }
+
+  .dark {
+    /* Core Dark Mode Colors */
+    --background: 220 10% 4%;
+    --foreground: 0 0% 95%;
+    
+    /* VJ Hub Brand Colors - Dark Mode */
+    --vj-primary: 0 0% 95%;
+    --vj-primary-foreground: 220 10% 9%;
+    --vj-muted: 220 5% 65%;
+    --vj-muted-foreground: 220 5% 50%;
+    --vj-accent: 217 92% 65%;
+    --vj-accent-foreground: 220 10% 9%;
+    --vj-accent-light: 217 92% 15%;
+    --vj-neutral: 220 10% 8%;
+    --vj-border: 220 10% 15%;
+    --vj-surface: 220 10% 6%;
+    
+    /* Problem-specific colors - Dark Mode */
+    --problem-primary: 25 95% 63%;
+    --problem-light: 25 95% 10%;
+    --problem-muted: 25 30% 50%;
+    
+    /* Idea-specific colors - Dark Mode */
+    --idea-primary: 142 76% 46%;
+    --idea-light: 142 76% 10%;
+    --idea-muted: 142 30% 45%;
+    
+    /* Startup-specific colors - Dark Mode */
+    --startup-primary: 263 85% 66%;
+    --startup-light: 263 85% 12%;
+    --startup-muted: 263 30% 55%;
+    
+    /* Dark mode shadcn mappings */
+    --primary: 217 92% 65%;
+    --primary-foreground: 220 10% 9%;
+    --secondary: 220 10% 12%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 220 10% 12%;
+    --muted-foreground: 220 5% 65%;
+    --accent: 217 92% 65%;
+    --accent-foreground: 220 10% 9%;
+    --card: 220 10% 6%;
+    --card-foreground: 0 0% 95%;
+    --popover: 220 10% 6%;
+    --popover-foreground: 0 0% 95%;
+    --border: 220 10% 15%;
+    --input: 220 10% 15%;
+    --ring: 217 92% 65%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+  }
     
     /* Premium shadows & effects */
     --vj-shadow-subtle: 0 2px 24px -4px rgba(20, 68, 185, 0.08);
@@ -182,6 +253,25 @@
     @apply relative overflow-hidden rounded-vj-xl p-8 hover-glow;
     background: var(--vj-gradient-subtle);
     border: 1px solid hsl(var(--vj-border));
+  }
+
+  /* Themed Cards */
+  .vj-card-problem {
+    @apply relative overflow-hidden rounded-vj-large p-6 hover-lift backdrop-blur-sm;
+    background: linear-gradient(135deg, hsl(var(--problem-light)), hsl(var(--vj-surface)));
+    border: 1px solid hsl(var(--problem-primary) / 0.2);
+  }
+
+  .vj-card-idea {
+    @apply relative overflow-hidden rounded-vj-large p-6 hover-lift backdrop-blur-sm;
+    background: linear-gradient(135deg, hsl(var(--idea-light)), hsl(var(--vj-surface)));
+    border: 1px solid hsl(var(--idea-primary) / 0.2);
+  }
+
+  .vj-card-startup {
+    @apply relative overflow-hidden rounded-vj-large p-6 hover-lift backdrop-blur-sm;
+    background: linear-gradient(135deg, hsl(var(--startup-light)), hsl(var(--vj-surface)));
+    border: 1px solid hsl(var(--startup-primary) / 0.2);
   }
 
   .vj-card-innovation::before {
