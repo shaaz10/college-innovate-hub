@@ -144,7 +144,8 @@
   }
 
   .hover-glow {
-    @apply transition-all duration-400 cubic-bezier(0.16, 1, 0.3, 1);
+    @apply transition-all duration-300;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .hover-glow:hover {
