@@ -53,38 +53,41 @@ const Home = () => {
     <div className="min-h-screen">
       {/* Hero Section - Innovation Focused */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Background with modern overlay */}
+        {/* Background with enhanced overlay for better text visibility */}
         <div 
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: `url(${innovationHero})`,
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-vj-surface/98 via-vj-surface/95 to-vj-accent-light/90" />
+        {/* Enhanced gradient overlay for better text readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-vj-surface/95 via-vj-surface/90 to-vj-accent-light/85" />
+        <div className="absolute inset-0 bg-gradient-to-t from-vj-surface/80 via-transparent to-vj-surface/60" />
         
-        {/* Floating elements */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-vj-accent/5 rounded-full animate-floating blur-xl" />
-        <div className="absolute top-40 right-20 w-24 h-24 bg-vj-accent/8 rounded-vj-large rotate-12 animate-glow" />
-        <div className="absolute bottom-32 left-20 w-40 h-40 bg-vj-accent/3 rounded-full animate-floating" style={{ animationDelay: '2s' }} />
+        {/* Floating elements with reduced opacity */}
+        <div className="absolute top-20 left-10 w-32 h-32 bg-vj-accent/3 rounded-full animate-floating blur-xl" />
+        <div className="absolute top-40 right-20 w-24 h-24 bg-vj-accent/5 rounded-vj-large rotate-12 animate-glow" />
+        <div className="absolute bottom-32 left-20 w-40 h-40 bg-vj-accent/2 rounded-full animate-floating" style={{ animationDelay: '2s' }} />
         
         <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
-          {/* Innovation badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-vj-accent-light border border-vj-accent/20 rounded-full mb-8 animate-scale-in">
+          {/* Innovation badge with better contrast */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-vj-surface/90 backdrop-blur-sm border border-vj-accent/30 rounded-full mb-8 animate-scale-in shadow-lg">
             <Sparkles size={16} className="text-vj-accent" />
             <span className="text-sm font-medium text-vj-accent">Innovation Starts Here</span>
           </div>
           
-          <h1 className="hero-quote mb-8 animate-fade-in">
+          {/* Enhanced text with better contrast */}
+          <h1 className="hero-quote mb-8 animate-fade-in drop-shadow-lg">
             Build for the future,<br />start here.
           </h1>
           
-          <p className="hero-subtitle mb-16 mx-auto animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <p className="hero-subtitle mb-16 mx-auto animate-fade-in drop-shadow-md" style={{ animationDelay: '0.2s' }}>
             Where college entrepreneurs transform problems into breakthrough startups. 
             Connect with innovators, build solutions, and shape tomorrow's world.
           </p>
           
-          {/* Animated Counters with modern styling */}
-          <div className="grid grid-cols-3 gap-8 md:gap-16 mb-16">
+          {/* Animated Counters with enhanced background */}
+          <div className="grid grid-cols-3 gap-8 md:gap-16 mb-16 bg-vj-surface/80 backdrop-blur-sm rounded-vj-large p-8 border border-vj-border/50 shadow-vj-card">
             <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
               <AnimatedCounter end={counters.startups} duration={2} label="Innovation Labs" />
             </div>
@@ -96,16 +99,16 @@ const Home = () => {
             </div>
           </div>
           
-          {/* CTA Buttons */}
+          {/* CTA Buttons with enhanced styling */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{ animationDelay: '1s' }}>
             <Link to="/problems">
-              <Button size="lg" className="btn-primary group">
+              <Button size="lg" className="btn-primary group shadow-vj-innovation">
                 Explore Problems
                 <ArrowRight size={20} className="ml-2 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
             <Link to="/ideas">
-              <Button size="lg" className="btn-secondary group">
+              <Button size="lg" className="btn-secondary group shadow-vj-card bg-vj-surface/90 backdrop-blur-sm">
                 View Solutions
                 <Brain size={20} className="ml-2 transition-transform group-hover:translate-x-1" />
               </Button>
