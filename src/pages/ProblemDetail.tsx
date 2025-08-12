@@ -67,9 +67,13 @@ const ProblemDetail = () => {
               </div>
             </div>
             
-            {/* Hero Image Placeholder */}
-            <div className="bg-vj-neutral rounded-xl h-64 mb-8 flex items-center justify-center">
-              <span className="text-vj-muted">Problem Illustration</span>
+            {/* Hero Image */}
+            <div className="rounded-xl h-64 mb-8 overflow-hidden">
+              <img 
+                src={`/src/assets/${problem.image}`} 
+                alt={problem.title}
+                className="w-full h-full object-cover"
+              />
             </div>
             
             {/* Problem Sections */}

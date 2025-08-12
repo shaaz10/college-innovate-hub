@@ -32,19 +32,19 @@ const Home = () => {
     {
       title: "AI-Powered Study Assistant",
       category: "EdTech",
-      image: "/api/placeholder/300/200",
+      image: "/src/assets/studyspace-startup.jpg",
       description: "Revolutionary learning platform using machine learning"
     },
     {
       title: "Sustainable Campus Energy",
       category: "GreenTech",
-      image: "/api/placeholder/300/200", 
+      image: "/src/assets/ecotrack-startup.jpg", 
       description: "IoT-based energy optimization for university buildings"
     },
     {
       title: "Mental Health Companion",
       category: "HealthTech",
-      image: "/api/placeholder/300/200",
+      image: "/src/assets/mindbridge-idea.jpg",
       description: "24/7 peer support network with crisis intervention"
     }
   ];
