@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import UpvoteButton from "@/components/UpvoteButton";
 import StatusBadge from "@/components/StatusBadge";
 import { mockIdeas, mockProblems } from "@/data/mockData";
+import IdeaSubmissionForm from "@/components/IdeaSubmissionForm";
 
 const Ideas = () => {
   const [searchParams] = useSearchParams();
@@ -49,16 +50,26 @@ const Ideas = () => {
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-vj-primary mb-4 font-playfair">
-            {problemFilter ? `Ideas for: ${problemTitle}` : "Innovative Ideas"}
-          </h1>
-          <p className="text-xl text-vj-muted max-w-3xl mx-auto">
-            {problemFilter 
-              ? "Student teams working on solutions for this specific problem"
-              : "Discover innovative solutions being developed by student entrepreneurs across all problem areas"
-            }
-          </p>
+        <div className="flex items-center justify-between mb-16">
+          <div className="text-center flex-1">
+            <h1 className="text-4xl md:text-5xl font-bold text-vj-primary mb-4 font-playfair">
+              {problemFilter ? `Ideas for: ${problemTitle}` : "Innovative Ideas"}
+            </h1>
+            <p className="text-xl text-vj-muted max-w-3xl mx-auto">
+              {problemFilter 
+                ? "Student teams working on solutions for this specific problem"
+                : "Discover innovative solutions being developed by student entrepreneurs across all problem areas"
+              }
+            </p>
+          </div>
+          <div className="hidden lg:block">
+            <IdeaSubmissionForm />
+          </div>
+        </div>
+        
+        {/* Mobile Submit Button */}
+        <div className="lg:hidden flex justify-center mb-8">
+          <IdeaSubmissionForm />
         </div>
         
         {/* Filters & Search */}

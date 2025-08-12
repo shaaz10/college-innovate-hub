@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import UpvoteButton from "@/components/UpvoteButton";
 import { mockProblems } from "@/data/mockData";
+import ProblemSubmissionForm from "@/components/ProblemSubmissionForm";
 
 const Problems = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -50,14 +51,24 @@ const Problems = () => {
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-vj-primary mb-4 font-playfair">
-            Problems Worth Solving
-          </h1>
-          <p className="text-xl text-vj-muted max-w-3xl mx-auto">
-            Real challenges identified by our community. Each problem represents an opportunity 
-            to create meaningful impact through innovative solutions.
-          </p>
+        <div className="flex items-center justify-between mb-16">
+          <div className="text-center flex-1">
+            <h1 className="text-4xl md:text-5xl font-bold text-vj-primary mb-4 font-playfair">
+              Problems Worth Solving
+            </h1>
+            <p className="text-xl text-vj-muted max-w-3xl mx-auto">
+              Real challenges identified by our community. Each problem represents an opportunity 
+              to create meaningful impact through innovative solutions.
+            </p>
+          </div>
+          <div className="hidden lg:block">
+            <ProblemSubmissionForm />
+          </div>
+        </div>
+        
+        {/* Mobile Submit Button */}
+        <div className="lg:hidden flex justify-center mb-8">
+          <ProblemSubmissionForm />
         </div>
         
         {/* Filters & Search */}
