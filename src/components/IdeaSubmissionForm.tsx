@@ -8,7 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Upload, X, UserPlus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { mockProblems, stageLabels } from "@/data/mockData";
+import { stageLabels } from "@/data/mockData";
+import { ideasAPI, problemsAPI } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 interface TeamMember {
   name: string;
@@ -31,6 +35,17 @@ const IdeaSubmissionForm = () => {
   const [open, setOpen] = useState(false);
   const [teamImagePreviews, setTeamImagePreviews] = useState<{ [key: number]: string }>({});
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
+  
+  // Fetch problems for dropdown
+  const { data: problemsData } = useQuery({
+    queryKey: ['problems-for-ideas'],
+    queryFn: () => problemsAPI.getProblems({ limit: 100 }),
+    staleTime: 10 * 60 * 1000,
+  });
+  
+  const problems = problemsData?.data?.problems || [];
   
   const { register, handleSubmit, reset, control, watch, formState: { errors, isSubmitting } } = useForm<IdeaFormData>({
     defaultValues: {
@@ -44,17 +59,52 @@ const IdeaSubmissionForm = () => {
   });
 
   const onSubmit = async (data: IdeaFormData) => {
-    try {
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      console.log("Idea submission data:", {
-        ...data,
-        teammates: data.teammates.map((teammate, index) => ({
-          ...teammate,
-          imagePreview: teamImagePreviews[index]
-        }))
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to submit an idea.",
+        variant: "destructive",
       });
+      return;
+    }
+    
+    try {
+      const ideaData = {
+        title: data.title,
+        description: data.description,
+        problemId: data.problemId,
+        stage: data.stage,
+        mentor: data.mentor,
+        contact: data.contact,
+        team: data.teammates.filter(teammate => teammate.name && teammate.email && teammate.role),
+      };
+      
+      await ideasAPI.createIdea(ideaData);
+      
+      // Invalidate and refetch ideas
+      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      
+      toast({
+        title: "Idea submitted successfully!",
+        description: "Your idea has been published and is now visible to the community.",
+      });
+      
+      reset();
+      setTeamImagePreviews({});
+      setOpen(false);
+    } catch (error: any) {
+      toast({
+        title: "Submission failed",
+        description: error.response?.data?.message || "Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const onSubmitOld = async (data: IdeaFormData) => {
+    try {
+      // Simulate form submission for demo
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       toast({
         title: "Idea submitted successfully!",
@@ -136,8 +186,8 @@ const IdeaSubmissionForm = () => {
                   <SelectValue placeholder="Select a problem" />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockProblems.map((problem) => (
-                    <SelectItem key={problem.id} value={problem.id}>
+                  {problems.map((problem: any) => (
+                    <SelectItem key={problem._id} value={problem._id}>
                       {problem.title}
                     </SelectItem>
                   ))}

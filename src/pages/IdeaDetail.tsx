@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Users, MessageCircle, Share2, Bookmark, Eye, Mail, Award, Target, Lightbulb, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import UpvoteButton from "@/components/UpvoteButton";
 import StatusBadge from "@/components/StatusBadge";
 import CommentSection from "@/components/CommentSection";
-import { mockIdeas, mockProblems, stageLabels, mockComments } from "@/data/mockData";
+import { stageLabels, mockComments } from "@/data/mockData";
+import { ideasAPI, problemsAPI } from "@/lib/api";
 import foodshareImage from "@/assets/foodshare-idea.jpg";
 import mindbridge from "@/assets/mindbridge-idea.jpg";
 
@@ -18,15 +20,58 @@ const imageMap: Record<string, string> = {
 
 export default function IdeaDetail() {
   const { id } = useParams();
-  const idea = mockIdeas.find(p => p.id === id);
-  const problem = idea ? mockProblems.find(p => p.id === idea.problemId) : null;
   const [comments, setComments] = useState(mockComments);
+  
+  // Fetch idea details
+  const { data: ideaData, isLoading: ideaLoading, error } = useQuery({
+    queryKey: ['idea', id],
+    queryFn: () => ideasAPI.getIdea(id!),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+  
+  const idea = ideaData?.data?.idea;
+  
+  // Fetch related problem
+  const { data: problemData } = useQuery({
+    queryKey: ['problem', idea?.problemId],
+    queryFn: () => problemsAPI.getProblem(idea.problemId._id || idea.problemId),
+    enabled: !!idea?.problemId,
+    staleTime: 10 * 60 * 1000,
+  });
+  
+  const problem = problemData?.data?.problem || idea?.problemId;
 
-  if (!idea) {
+  if (ideaLoading) {
+    return (
+      <div className="min-h-screen pt-24 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-32 mb-8"></div>
+            <div className="h-96 bg-gray-200 rounded-vj-large mb-8"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="h-32 bg-gray-200 rounded-lg"></div>
+                <div className="h-48 bg-gray-200 rounded-lg"></div>
+              </div>
+              <div className="space-y-6">
+                <div className="h-32 bg-gray-200 rounded-lg"></div>
+                <div className="h-24 bg-gray-200 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error || !idea) {
     return (
       <div className="min-h-screen pt-24 px-4 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-vj-primary mb-4">Idea Not Found</h1>
+          <h1 className="text-2xl font-bold text-vj-primary mb-4">
+            {error ? "Error Loading Idea" : "Idea Not Found"}
+          </h1>
           <Link to="/ideas">
             <Button>Back to Ideas</Button>
           </Link>
@@ -74,7 +119,7 @@ export default function IdeaDetail() {
     ));
   };
 
-  const ideaImage = imageMap[idea.id] || "/api/placeholder/800/400";
+  const ideaImage = imageMap[idea._id] || "/api/placeholder/800/400";
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -117,9 +162,13 @@ export default function IdeaDetail() {
                   </p>
                 </div>
                 <UpvoteButton 
-                  upvotes={idea.upvotes} 
-                  downvotes={idea.downvotes}
+                  upvotes={idea.upvoteCount || 0} 
+                  downvotes={idea.downvoteCount || 0}
+                  isUpvoted={idea.isUpvoted}
+                  isDownvoted={idea.isDownvoted}
                   showDownvote={true}
+                  targetId={idea._id}
+                  targetType="idea"
                   className="bg-white/90 backdrop-blur-sm"
                 />
               </div>
@@ -131,12 +180,12 @@ export default function IdeaDetail() {
             <div className="flex items-center gap-4 text-sm text-vj-muted">
               <div className="flex items-center gap-1">
                 <Eye size={16} />
-                <span>89 views</span>
+                <span>{idea.views || 0} views</span>
               </div>
               <span>•</span>
               <div className="flex items-center gap-1">
                 <MessageCircle size={16} />
-                <span>{idea.comments} comments</span>
+                <span>{idea.commentsCount || 0} comments</span>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -159,7 +208,7 @@ export default function IdeaDetail() {
                 Addressing Problem
               </h3>
               <Link 
-                to={`/problems/${problem.id}`}
+                to={`/problems/${problem._id || problem.id}`}
                 className="text-vj-primary hover:text-idea-primary transition-colors font-medium"
               >
                 {problem.title}
@@ -298,11 +347,11 @@ export default function IdeaDetail() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-vj-muted">Upvotes</span>
-                  <span className="font-medium text-idea-primary">{idea.upvotes}</span>
+                  <span className="font-medium text-idea-primary">{idea.upvoteCount || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-vj-muted">Comments</span>
-                  <span className="font-medium text-idea-primary">{idea.comments}</span>
+                  <span className="font-medium text-idea-primary">{idea.commentsCount || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-vj-muted">Stage Progress</span>

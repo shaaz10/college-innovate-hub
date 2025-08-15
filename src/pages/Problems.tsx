@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Filter, Search, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import UpvoteButton from "@/components/UpvoteButton";
-import { mockProblems } from "@/data/mockData";
+import { problemsAPI } from "@/lib/api";
 import ProblemSubmissionForm from "@/components/ProblemSubmissionForm";
 
 const Problems = () => {
@@ -13,31 +14,25 @@ const Problems = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("upvotes");
   
-  // Get all unique tags
-  const allTags = Array.from(new Set(mockProblems.flatMap(p => p.tags)));
+  // Fetch problems from API
+  const { data: problemsData, isLoading, error } = useQuery({
+    queryKey: ['problems', searchTerm, selectedTags, sortBy],
+    queryFn: () => problemsAPI.getProblems({
+      search: searchTerm || undefined,
+      tags: selectedTags.length > 0 ? selectedTags.join(',') : undefined,
+      sort: sortBy === 'upvotes' ? 'popular' : sortBy,
+      limit: 50
+    }),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+  
+  const problems = problemsData?.data?.problems || [];
+  
+  // Get all unique tags from fetched problems
+  const allTags = Array.from(new Set(problems.flatMap((p: any) => p.tags)));
   
   // Filter and sort problems
-  const filteredProblems = mockProblems
-    .filter(problem => 
-      problem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      problem.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .filter(problem => 
-      selectedTags.length === 0 || 
-      selectedTags.some(tag => problem.tags.includes(tag))
-    )
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "upvotes":
-          return b.upvotes - a.upvotes;
-        case "newest":
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
-        case "comments":
-          return b.comments - a.comments;
-        default:
-          return 0;
-      }
-    });
+  const filteredProblems = problems;
   
   const toggleTag = (tag: string) => {
     setSelectedTags(prev => 
@@ -123,12 +118,28 @@ const Problems = () => {
         
         {/* Problems Grid */}
         <div className="problems-grid">
-          {filteredProblems.map(problem => (
+          {isLoading ? (
+            // Loading skeleton
+            Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="vj-card-problem animate-pulse">
+                <div className="aspect-video bg-gray-200 rounded-vj-large mb-6"></div>
+                <div className="space-y-4">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-6 bg-gray-200 rounded w-full"></div>
+                  <div className="h-16 bg-gray-200 rounded w-full"></div>
+                </div>
+              </div>
+            ))
+          ) : error ? (
+            <div className="col-span-full text-center py-16">
+              <p className="text-red-500 text-lg">Failed to load problems. Please try again.</p>
+            </div>
+          ) : filteredProblems.map((problem: any) => (
             <div key={problem.id} className="vj-card-problem group">
               {/* Problem Image */}
               <div className="aspect-video relative overflow-hidden rounded-vj-large mb-6">
                 <img 
-                  src={`/src/assets/${problem.image}`}
+                  src={problem.image || `/src/assets/food-waste-problem.jpg`}
                   alt={problem.title}
                   className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
                 />
@@ -140,7 +151,10 @@ const Problems = () => {
                   </div>
                 </div>
                 <div className="absolute bottom-4 right-4">
-                  <UpvoteButton upvotes={problem.upvotes} className="bg-white/90 backdrop-blur-sm" />
+                  <UpvoteButton 
+                    upvotes={problem.upvoteCount || 0} 
+                    className="bg-white/90 backdrop-blur-sm" 
+                  />
                 </div>
               </div>
 
@@ -162,17 +176,17 @@ const Problems = () => {
                 </p>
                 
                 <div className="flex items-center justify-between text-sm text-vj-muted pt-4 border-t border-vj-border/50">
-                  <span>by {problem.author}</span>
-                  <span>{problem.comments} comments</span>
+                  <span>by {problem.author?.fullName || problem.author?.firstName + ' ' + problem.author?.lastName}</span>
+                  <span>{problem.commentsCount || 0} comments</span>
                 </div>
                 
                 <div className="flex gap-3 pt-2">
-                  <Link to={`/problems/${problem.id}`} className="flex-1">
+                  <Link to={`/problems/${problem._id}`} className="flex-1">
                     <Button size="sm" className="w-full bg-problem-primary hover:bg-problem-primary/90 text-white">
                       View Details
                     </Button>
                   </Link>
-                  <Link to={`/ideas?problem=${problem.id}`} className="flex-1">
+                  <Link to={`/ideas?problem=${problem._id}`} className="flex-1">
                     <Button size="sm" variant="outline" className="w-full border-problem-primary/30 text-problem-primary hover:bg-problem-light">
                       View Ideas
                     </Button>

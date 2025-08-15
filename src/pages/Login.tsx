@@ -1,19 +1,89 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
+  const [signupData, setSignupData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    university: '',
+    role: ''
+  });
   
-  const handleSubmit = async (e: React.FormEvent) => {
+  const { login, register } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => setIsLoading(false), 1000);
+    
+    try {
+      await login(loginData.email, loginData.password);
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully logged in.",
+      });
+      navigate('/');
+    } catch (error: any) {
+      toast({
+        title: "Login failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    if (signupData.password !== signupData.confirmPassword) {
+      toast({
+        title: "Password mismatch",
+        description: "Passwords do not match.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    try {
+      await register({
+        email: signupData.email,
+        password: signupData.password,
+        firstName: signupData.firstName,
+        lastName: signupData.lastName,
+        university: signupData.university,
+        role: signupData.role
+      });
+      toast({
+        title: "Account created!",
+        description: "Welcome to VJ Hub community.",
+      });
+      navigate('/');
+    } catch (error: any) {
+      toast({
+        title: "Registration failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
@@ -43,13 +113,15 @@ const Login = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
                       type="email"
                       placeholder="your.email@university.edu"
+                      value={loginData.email}
+                      onChange={(e) => setLoginData(prev => ({ ...prev, email: e.target.value }))}
                       required
                     />
                   </div>
@@ -58,6 +130,8 @@ const Login = () => {
                     <Input
                       id="password"
                       type="password"
+                      value={loginData.password}
+                      onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
                       required
                     />
                   </div>
@@ -91,13 +165,15 @@ const Login = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSignup} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="firstName">First Name</Label>
                       <Input
                         id="firstName"
                         placeholder="John"
+                        value={signupData.firstName}
+                        onChange={(e) => setSignupData(prev => ({ ...prev, firstName: e.target.value }))}
                         required
                       />
                     </div>
@@ -106,6 +182,8 @@ const Login = () => {
                       <Input
                         id="lastName"
                         placeholder="Doe"
+                        value={signupData.lastName}
+                        onChange={(e) => setSignupData(prev => ({ ...prev, lastName: e.target.value }))}
                         required
                       />
                     </div>
@@ -116,6 +194,8 @@ const Login = () => {
                     <Input
                       id="university"
                       placeholder="MIT, Stanford, etc."
+                      value={signupData.university}
+                      onChange={(e) => setSignupData(prev => ({ ...prev, university: e.target.value }))}
                       required
                     />
                   </div>
@@ -126,6 +206,8 @@ const Login = () => {
                       id="signupEmail"
                       type="email"
                       placeholder="your.email@university.edu"
+                      value={signupData.email}
+                      onChange={(e) => setSignupData(prev => ({ ...prev, email: e.target.value }))}
                       required
                     />
                   </div>
@@ -135,6 +217,8 @@ const Login = () => {
                     <select 
                       id="role"
                       className="w-full bg-background border border-vj-border rounded-lg px-3 py-2 text-sm"
+                      value={signupData.role}
+                      onChange={(e) => setSignupData(prev => ({ ...prev, role: e.target.value }))}
                       required
                     >
                       <option value="">Select your role</option>
@@ -148,6 +232,8 @@ const Login = () => {
                     <Input
                       id="signupPassword"
                       type="password"
+                      value={signupData.password}
+                      onChange={(e) => setSignupData(prev => ({ ...prev, password: e.target.value }))}
                       required
                     />
                   </div>
@@ -157,6 +243,8 @@ const Login = () => {
                     <Input
                       id="confirmPassword"
                       type="password"
+                      value={signupData.confirmPassword}
+                      onChange={(e) => setSignupData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                       required
                     />
                   </div>

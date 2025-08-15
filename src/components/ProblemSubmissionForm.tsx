@@ -7,6 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { problemsAPI } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ProblemFormData {
   title: string;
@@ -27,15 +30,63 @@ const ProblemSubmissionForm = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
   
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ProblemFormData>();
 
   const onSubmit = async (data: ProblemFormData) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to submit a problem.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
-      // Simulate form submission
+      const problemData = {
+        title: data.title,
+        excerpt: data.excerpt,
+        description: data.description,
+        background: data.background,
+        scalability: data.scalability,
+        marketSize: data.marketSize,
+        competitors: data.competitors ? data.competitors.split(',').map(c => c.trim()) : [],
+        currentGaps: data.currentGaps,
+        tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : [],
+      };
+      
+      await problemsAPI.createProblem(problemData);
+      
+      // Invalidate and refetch problems
+      queryClient.invalidateQueries({ queryKey: ['problems'] });
+      
+      toast({
+        title: "Problem submitted successfully!",
+        description: "Your problem has been published and is now visible to the community.",
+      });
+      
+      reset();
+      setSelectedImage(null);
+      setImagePreview(null);
+      setOpen(false);
+    } catch (error: any) {
+      toast({
+        title: "Submission failed",
+        description: error.response?.data?.message || "Please try again later.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const onSubmitOld = async (data: ProblemFormData) => {
+    try {
+      // Simulate form submission for demo
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      console.log("Problem submission data:", {
+      console.log("Problem submission data (demo):", {
         ...data,
         image: selectedImage,
         tags: data.tags.split(",").map(tag => tag.trim())
@@ -92,23 +143,27 @@ const ProblemSubmissionForm = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="authorName">Your Name *</Label>
-              <Input 
-                id="authorName"
-                {...register("authorName", { required: "Name is required" })}
-                placeholder="Enter your name"
-              />
-              {errors.authorName && <p className="text-red-500 text-sm mt-1">{errors.authorName.message}</p>}
-            </div>
-
-            <div>
               <Label htmlFor="title">Problem Title *</Label>
               <Input 
                 id="title"
-                {...register("title", { required: "Title is required" })}
+                {...register("title", { 
+                  required: "Title is required",
+                  minLength: { value: 5, message: "Title must be at least 5 characters" },
+                  maxLength: { value: 200, message: "Title must not exceed 200 characters" }
+                })}
                 placeholder="Enter problem title"
               />
               {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
+            </div>
+
+            <div>
+              <Label htmlFor="tags">Tags</Label>
+              <Input 
+                id="tags"
+                {...register("tags")}
+                placeholder="e.g., Sustainability, Technology, Healthcare"
+              />
+              <p className="text-xs text-gray-500 mt-1">Separate multiple tags with commas</p>
             </div>
           </div>
 
@@ -116,7 +171,11 @@ const ProblemSubmissionForm = () => {
             <Label htmlFor="excerpt">Brief Summary *</Label>
             <Textarea 
               id="excerpt"
-              {...register("excerpt", { required: "Summary is required" })}
+              {...register("excerpt", { 
+                required: "Summary is required",
+                minLength: { value: 10, message: "Summary must be at least 10 characters" },
+                maxLength: { value: 300, message: "Summary must not exceed 300 characters" }
+              })}
               placeholder="Brief description of the problem (2-3 sentences)"
               rows={2}
             />
@@ -127,7 +186,11 @@ const ProblemSubmissionForm = () => {
             <Label htmlFor="description">Detailed Description *</Label>
             <Textarea 
               id="description"
-              {...register("description", { required: "Description is required" })}
+              {...register("description", { 
+                required: "Description is required",
+                minLength: { value: 50, message: "Description must be at least 50 characters" },
+                maxLength: { value: 5000, message: "Description must not exceed 5000 characters" }
+              })}
               placeholder="Provide a detailed explanation of the problem"
               rows={4}
             />
@@ -181,15 +244,6 @@ const ProblemSubmissionForm = () => {
               {...register("currentGaps")}
               placeholder="What's missing in current solutions?"
               rows={2}
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="tags">Tags</Label>
-            <Input 
-              id="tags"
-              {...register("tags")}
-              placeholder="e.g., Sustainability, Technology, Healthcare (comma-separated)"
             />
           </div>
 

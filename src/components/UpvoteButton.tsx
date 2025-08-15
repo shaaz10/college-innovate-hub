@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 interface UpvoteButtonProps {
   upvotes: number;
@@ -9,6 +11,10 @@ interface UpvoteButtonProps {
   onDownvote?: () => void;
   showDownvote?: boolean;
   className?: string;
+  targetId?: string;
+  targetType?: 'problem' | 'idea' | 'startup';
+  isUpvoted?: boolean;
+  isDownvoted?: boolean;
 }
 
 const UpvoteButton = ({ 
@@ -17,14 +23,29 @@ const UpvoteButton = ({
   onUpvote, 
   onDownvote, 
   showDownvote = false,
-  className = ""
+  className = "",
+  targetId,
+  targetType,
+  isUpvoted: initialUpvoted = false,
+  isDownvoted: initialDownvoted = false
 }: UpvoteButtonProps) => {
-  const [isUpvoted, setIsUpvoted] = useState(false);
-  const [isDownvoted, setIsDownvoted] = useState(false);
+  const [isUpvoted, setIsUpvoted] = useState(initialUpvoted);
+  const [isDownvoted, setIsDownvoted] = useState(initialDownvoted);
   const [currentUpvotes, setCurrentUpvotes] = useState(upvotes);
   const [currentDownvotes, setCurrentDownvotes] = useState(downvotes);
+  const { isAuthenticated } = useAuth();
+  const { toast } = useToast();
   
   const handleUpvote = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to vote.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (isUpvoted) {
       setCurrentUpvotes(prev => prev - 1);
       setIsUpvoted(false);
@@ -40,6 +61,15 @@ const UpvoteButton = ({
   };
   
   const handleDownvote = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication required", 
+        description: "Please log in to vote.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (isDownvoted) {
       setCurrentDownvotes(prev => prev - 1);
       setIsDownvoted(false);

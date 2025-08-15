@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
 import { Search, Filter, Users, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import UpvoteButton from "@/components/UpvoteButton";
 import StatusBadge from "@/components/StatusBadge";
-import { mockIdeas, mockProblems } from "@/data/mockData";
+import { ideasAPI, problemsAPI } from "@/lib/api";
 import IdeaSubmissionForm from "@/components/IdeaSubmissionForm";
 
 const Ideas = () => {
@@ -17,34 +18,30 @@ const Ideas = () => {
   const [stageFilter, setStageFilter] = useState("");
   const [sortBy, setSortBy] = useState("upvotes");
   
-  // Filter and sort ideas
-  const filteredIdeas = mockIdeas
-    .filter(idea => 
-      !problemFilter || idea.problemId === problemFilter
-    )
-    .filter(idea => 
-      idea.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      idea.description.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .filter(idea => 
-      !stageFilter || idea.stage.toString() === stageFilter
-    )
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "upvotes":
-          return (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes);
-        case "stage":
-          return b.stage - a.stage;
-        case "comments":
-          return b.comments - a.comments;
-        default:
-          return 0;
-      }
-    });
+  // Fetch ideas from API
+  const { data: ideasData, isLoading: ideasLoading } = useQuery({
+    queryKey: ['ideas', searchTerm, problemFilter, stageFilter, sortBy],
+    queryFn: () => ideasAPI.getIdeas({
+      search: searchTerm || undefined,
+      problemId: problemFilter || undefined,
+      stage: stageFilter ? parseInt(stageFilter) : undefined,
+      sort: sortBy === 'upvotes' ? 'popular' : sortBy,
+      limit: 50
+    }),
+    staleTime: 5 * 60 * 1000,
+  });
   
-  const problemTitle = problemFilter 
-    ? mockProblems.find(p => p.id === problemFilter)?.title 
-    : null;
+  // Fetch problem details if filtering by problem
+  const { data: problemData } = useQuery({
+    queryKey: ['problem', problemFilter],
+    queryFn: () => problemsAPI.getProblem(problemFilter!),
+    enabled: !!problemFilter,
+    staleTime: 10 * 60 * 1000,
+  });
+  
+  const filteredIdeas = ideasData?.data?.ideas || [];
+  
+  const problemTitle = problemData?.data?.problem?.title;
   
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -122,7 +119,19 @@ const Ideas = () => {
         
         {/* Ideas Grid */}
         <div className="ideas-grid">
-          {filteredIdeas.map(idea => (
+          {ideasLoading ? (
+            // Loading skeleton
+            Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="vj-card-idea animate-pulse">
+                <div className="aspect-video bg-gray-200 rounded-vj-large mb-6"></div>
+                <div className="space-y-4">
+                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-16 bg-gray-200 rounded w-full"></div>
+                  <div className="h-20 bg-gray-200 rounded w-full"></div>
+                </div>
+              </div>
+            ))
+          ) : filteredIdeas.map((idea: any) => (
             <div key={idea.id} className="vj-card-idea group">
               {/* Idea Header with Creative Visual */}
               <div className="aspect-video relative overflow-hidden rounded-vj-large mb-6 bg-gradient-to-br from-idea-light to-idea-primary/20">
@@ -143,13 +152,13 @@ const Ideas = () => {
                 <div className="absolute bottom-4 left-4">
                   <div className="flex items-center gap-1 text-white bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full">
                     <MessageCircle size={12} />
-                    <span className="text-xs">{idea.comments}</span>
+                    <span className="text-xs">{idea.commentsCount || 0}</span>
                   </div>
                 </div>
                 <div className="absolute bottom-4 right-4">
                   <UpvoteButton 
-                    upvotes={idea.upvotes} 
-                    downvotes={idea.downvotes}
+                    upvotes={idea.upvoteCount || 0} 
+                    downvotes={idea.downvoteCount || 0}
                     showDownvote={true}
                     className="bg-white/90 backdrop-blur-sm"
                   />
@@ -197,7 +206,7 @@ const Ideas = () => {
                 )}
                 
                 <div className="flex gap-3 pt-2">
-                  <Link to={`/ideas/${idea.id}`} className="flex-1">
+                  <Link to={`/ideas/${idea._id}`} className="flex-1">
                     <Button size="sm" className="w-full bg-idea-primary hover:bg-idea-primary/90 text-white">
                       View Details
                     </Button>

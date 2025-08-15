@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Search, TrendingUp, Users, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,34 +7,30 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import UpvoteButton from "@/components/UpvoteButton";
 import StatusBadge from "@/components/StatusBadge";
-import { mockStartups } from "@/data/mockData";
+import { startupsAPI } from "@/lib/api";
 
 const Startups = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [fundingFilter, setFundingFilter] = useState("");
   const [sortBy, setSortBy] = useState("stage");
   
-  // Filter and sort startups
-  const filteredStartups = mockStartups
-    .filter(startup => 
-      startup.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      startup.description.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .filter(startup => 
-      !fundingFilter || startup.fundingStatus.toLowerCase().includes(fundingFilter.toLowerCase())
-    )
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "stage":
-          return b.stage - a.stage;
-        case "upvotes":
-          return b.upvotes - a.upvotes;
-        case "name":
-          return a.name.localeCompare(b.name);
-        default:
-          return 0;
-      }
-    });
+  // Fetch startups from API
+  const { data: startupsData, isLoading, error } = useQuery({
+    queryKey: ['startups', searchTerm, fundingFilter, sortBy],
+    queryFn: () => startupsAPI.getStartups({
+      search: searchTerm || undefined,
+      sort: sortBy,
+      limit: 50
+    }),
+    staleTime: 5 * 60 * 1000,
+  });
+  
+  const startups = startupsData?.data?.startups || [];
+  
+  // Client-side filtering for funding status (since backend doesn't have this filter yet)
+  const filteredStartups = startups.filter((startup: any) => 
+    !fundingFilter || startup.fundingStatus.toLowerCase().includes(fundingFilter.toLowerCase())
+  );
   
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -90,13 +87,32 @@ const Startups = () => {
         
         {/* Startups Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-          {filteredStartups.map(startup => (
+          {isLoading ? (
+            // Loading skeleton
+            Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="vj-card-startup animate-pulse">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="w-16 h-16 bg-gray-200 rounded-vj-large"></div>
+                  <div className="flex-1 space-y-2">
+                    <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </div>
+                <div className="h-16 bg-gray-200 rounded w-full mb-4"></div>
+                <div className="h-12 bg-gray-200 rounded w-full"></div>
+              </div>
+            ))
+          ) : error ? (
+            <div className="col-span-full text-center py-16">
+              <p className="text-red-500 text-lg">Failed to load startups. Please try again.</p>
+            </div>
+          ) : filteredStartups.map((startup: any) => (
             <div key={startup.id} className="vj-card-startup group">
               {/* Startup Logo/Header */}
               <div className="flex items-start gap-4 mb-6">
                 <div className="w-16 h-16 rounded-vj-large overflow-hidden bg-startup-light border-2 border-startup-primary/20 flex items-center justify-center group-hover:border-startup-primary/40 transition-colors">
                   <img 
-                    src={`/src/assets/startup-logo-${startup.id}.png`}
+                    src={startup.logo || `/src/assets/startup-logo-${startup._id}.png`}
                     alt={`${startup.name} logo`}
                     className="w-12 h-12 object-contain"
                     onError={(e) => {
@@ -119,7 +135,7 @@ const Startups = () => {
                     <StatusBadge stage={startup.stage} />
                   </div>
                   <div className="mt-2 flex items-center gap-2">
-                    <UpvoteButton upvotes={startup.upvotes} className="scale-75" />
+                    <UpvoteButton upvotes={startup.upvoteCount || 0} className="scale-75" />
                     <div className="flex items-center gap-1 px-2 py-1 bg-startup-light text-startup-primary text-xs font-medium rounded-full">
                       🚀 <span>Startup</span>
                     </div>
@@ -201,7 +217,7 @@ const Startups = () => {
               </div>
               
               <div className="flex gap-3">
-                <Link to={`/startups/${startup.id}`} className="flex-1">
+                <Link to={`/startups/${startup._id}`} className="flex-1">
                   <Button size="sm" className="w-full bg-startup-primary hover:bg-startup-primary/90 text-white">
                     View Details
                   </Button>
