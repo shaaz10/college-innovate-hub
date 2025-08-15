@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Users, MessageCircle, Share2, Bookmark, Eye, Download, Award, TrendingUp, Target, Building, Calendar, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import UpvoteButton from "@/components/UpvoteButton";
 import StatusBadge from "@/components/StatusBadge";
 import CommentSection from "@/components/CommentSection";
-import { mockStartups, stageLabels, mockComments } from "@/data/mockData";
+import { stageLabels, mockComments } from "@/data/mockData";
+import { startupsAPI } from "@/lib/api";
 import studyspaceImage from "@/assets/studyspace-startup.jpg";
 import ecotrackImage from "@/assets/ecotrack-startup.jpg";
 
@@ -18,14 +20,48 @@ const imageMap: Record<string, string> = {
 
 export default function StartupDetail() {
   const { id } = useParams();
-  const startup = mockStartups.find(s => s.id === id);
   const [comments, setComments] = useState(mockComments);
+  
+  // Fetch startup details
+  const { data: startupData, isLoading, error } = useQuery({
+    queryKey: ['startup', id],
+    queryFn: () => startupsAPI.getStartup(id!),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  });
+  
+  const startup = startupData?.data?.startup;
 
-  if (!startup) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pt-24 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded w-32 mb-8"></div>
+            <div className="h-96 bg-gray-200 rounded-vj-large mb-8"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="h-32 bg-gray-200 rounded-lg"></div>
+                <div className="h-48 bg-gray-200 rounded-lg"></div>
+              </div>
+              <div className="space-y-6">
+                <div className="h-32 bg-gray-200 rounded-lg"></div>
+                <div className="h-24 bg-gray-200 rounded-lg"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error || !startup) {
     return (
       <div className="min-h-screen pt-24 px-4 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-vj-primary mb-4">Startup Not Found</h1>
+          <h1 className="text-2xl font-bold text-vj-primary mb-4">
+            {error ? "Error Loading Startup" : "Startup Not Found"}
+          </h1>
           <Link to="/startups">
             <Button>Back to Startups</Button>
           </Link>
@@ -73,7 +109,7 @@ export default function StartupDetail() {
     ));
   };
 
-  const startupImage = imageMap[startup.id] || "/api/placeholder/800/400";
+  const startupImage = imageMap[startup._id] || "/api/placeholder/800/400";
 
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
@@ -116,7 +152,10 @@ export default function StartupDetail() {
                   </p>
                 </div>
                 <UpvoteButton 
-                  upvotes={startup.upvotes}
+                  upvotes={startup.upvoteCount || 0}
+                  isUpvoted={startup.isUpvoted}
+                  targetId={startup._id}
+                  targetType="startup"
                   className="bg-white/90 backdrop-blur-sm"
                 />
               </div>
@@ -128,12 +167,12 @@ export default function StartupDetail() {
             <div className="flex items-center gap-4 text-sm text-vj-muted">
               <div className="flex items-center gap-1">
                 <Eye size={16} />
-                <span>156 views</span>
+                <span>{startup.views || 0} views</span>
               </div>
               <span>•</span>
               <div className="flex items-center gap-1">
                 <MessageCircle size={16} />
-                <span>12 comments</span>
+                <span>{startup.commentsCount || 0} comments</span>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -357,7 +396,7 @@ export default function StartupDetail() {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-vj-muted">Community Support</span>
-                  <span className="font-medium text-startup-primary">{startup.upvotes} upvotes</span>
+                  <span className="font-medium text-startup-primary">{startup.upvoteCount || 0} upvotes</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-vj-muted">Development Stage</span>
@@ -370,7 +409,7 @@ export default function StartupDetail() {
                 <div className="flex justify-between">
                   <span className="text-vj-muted">Milestones Achieved</span>
                   <span className="font-medium text-startup-primary">
-                    {startup.milestones.filter(m => m.completed).length}/{startup.milestones.length}
+                    {startup.completedMilestones || 0}/{startup.milestones.length}
                   </span>
                 </div>
               </div>

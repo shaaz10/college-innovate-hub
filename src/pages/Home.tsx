@@ -3,10 +3,35 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Lightbulb, Users, TrendingUp, Award, Rocket, Globe, Zap, Sparkles, Brain, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AnimatedCounter from "@/components/AnimatedCounter";
-import { counters, mockProblems, mockIdeas, mockStartups } from "@/data/mockData";
+import { counters } from "@/data/mockData";
+import { useQuery } from "@tanstack/react-query";
+import { problemsAPI, ideasAPI, startupsAPI } from "@/lib/api";
 import innovationHero from "@/assets/innovation-hero.jpg";
 
 const Home = () => {
+  // Fetch latest data for preview sections
+  const { data: problemsData } = useQuery({
+    queryKey: ['problems-preview'],
+    queryFn: () => problemsAPI.getProblems({ limit: 2, sort: 'popular' }),
+    staleTime: 10 * 60 * 1000,
+  });
+  
+  const { data: ideasData } = useQuery({
+    queryKey: ['ideas-preview'],
+    queryFn: () => ideasAPI.getIdeas({ limit: 2, sort: 'popular' }),
+    staleTime: 10 * 60 * 1000,
+  });
+  
+  const { data: startupsData } = useQuery({
+    queryKey: ['startups-preview'],
+    queryFn: () => startupsAPI.getStartups({ limit: 2, sort: 'popular' }),
+    staleTime: 10 * 60 * 1000,
+  });
+  
+  const recentProblems = problemsData?.data?.problems || [];
+  const recentIdeas = ideasData?.data?.ideas || [];
+  const recentStartups = startupsData?.data?.startups || [];
+  
   const achievements = [
     {
       icon: Award,
@@ -230,10 +255,10 @@ const Home = () => {
                 Real challenges that need solving, identified by students and faculty
               </p>
               <div className="space-y-4 mb-6">
-                {mockProblems.slice(0, 2).map(problem => (
+                {recentProblems.map((problem: any) => (
                   <div key={problem.id} className="border-l-2 border-vj-accent/20 pl-4">
                     <h4 className="font-medium text-vj-primary text-sm">{problem.title}</h4>
-                    <p className="text-xs text-vj-muted mt-1">{problem.upvotes} upvotes</p>
+                    <p className="text-xs text-vj-muted">{problem.upvoteCount || 0} upvotes</p>
                   </div>
                 ))}
               </div>
@@ -254,10 +279,10 @@ const Home = () => {
                 Innovative solutions being developed by student teams
               </p>
               <div className="space-y-4 mb-6">
-                {mockIdeas.slice(0, 2).map(idea => (
+                {recentIdeas.map((idea: any) => (
                   <div key={idea.id} className="border-l-2 border-vj-accent/20 pl-4">
                     <h4 className="font-medium text-vj-primary text-sm">{idea.title}</h4>
-                    <p className="text-xs text-vj-muted mt-1">Stage {idea.stage} • {idea.upvotes} upvotes</p>
+                    <p className="text-xs text-vj-muted">Stage {idea.stage} • {idea.upvoteCount || 0} upvotes</p>
                   </div>
                 ))}
               </div>
@@ -278,7 +303,7 @@ const Home = () => {
                 Successful ventures that grew from ideas to funded companies
               </p>
               <div className="space-y-4 mb-6">
-                {mockStartups.slice(0, 2).map(startup => (
+                {recentStartups.map((startup: any) => (
                   <div key={startup.id} className="border-l-2 border-vj-accent/20 pl-4">
                     <h4 className="font-medium text-vj-primary text-sm">{startup.name}</h4>
                     <p className="text-xs text-vj-muted mt-1">{startup.fundingStatus}</p>
