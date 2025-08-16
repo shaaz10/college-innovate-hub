@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { authAPI } from '@/lib/api';
 
 interface User {
@@ -98,22 +98,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const value = {
-    user,
-    isLoading,
-    isAuthenticated: !!user,
-    login,
-    register,
-    logout,
-    refreshUser,
-  };
-
-  return React.createElement(AuthContext.Provider, { value }, children);
+  return (
+    <AuthContext.Provider value={{
+      user,
+      isLoading,
+      isAuthenticated,
+      login,
+      register,
+      logout,
+      refreshUser,
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;

@@ -29,7 +29,7 @@ const Problems = () => {
   const problems = problemsData?.data?.problems || [];
   
   // Get all unique tags from fetched problems
-  const allTags = Array.from(new Set(problems.flatMap((p: any) => p.tags)));
+  const allTags: string[] = Array.from(new Set(problems.flatMap((p: any) => p.tags || [])));
   
   // Filter and sort problems
   const filteredProblems = problems;
