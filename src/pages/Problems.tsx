@@ -6,32 +6,62 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import UpvoteButton from "@/components/UpvoteButton";
-import { problemsAPI } from "@/lib/api";
 import ProblemSubmissionForm from "@/components/ProblemSubmissionForm";
+import { supabase } from "@/integrations/supabase/client";
 
 const Problems = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("upvotes");
   
-  // Fetch problems from API
-  const { data: problemsData, isLoading, error } = useQuery({
+  // Fetch problems from Supabase
+  const { data: problems = [], isLoading, error } = useQuery({
     queryKey: ['problems', searchTerm, selectedTags, sortBy],
-    queryFn: () => problemsAPI.getProblems({
-      search: searchTerm || undefined,
-      tags: selectedTags.length > 0 ? selectedTags.join(',') : undefined,
-      sort: sortBy === 'upvotes' ? 'popular' : sortBy,
-      limit: 50
-    }),
+    queryFn: async () => {
+      let query = supabase
+        .from('problems')
+        .select(`
+          *,
+          profiles!problems_user_id_fkey (
+            first_name,
+            last_name,
+            full_name
+          )
+        `);
+
+      // Apply search filter
+      if (searchTerm) {
+        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+      }
+
+      // Apply tag filter
+      if (selectedTags.length > 0) {
+        query = query.overlaps('tags', selectedTags);
+      }
+
+      // Apply sorting
+      switch (sortBy) {
+        case 'newest':
+          query = query.order('created_at', { ascending: false });
+          break;
+        case 'upvotes':
+        default:
+          query = query.order('upvotes', { ascending: false });
+          break;
+      }
+
+      const { data, error } = await query.limit(50);
+      
+      if (error) throw error;
+      return data || [];
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-  
-  const problems = problemsData?.data?.problems || [];
   
   // Get all unique tags from fetched problems
   const allTags: string[] = Array.from(new Set(problems.flatMap((p: any) => p.tags || [])));
   
-  // Filter and sort problems
+  // Filter and sort problems (already handled in query)
   const filteredProblems = problems;
   
   const toggleTag = (tag: string) => {
@@ -152,7 +182,7 @@ const Problems = () => {
                 </div>
                 <div className="absolute bottom-4 right-4">
                   <UpvoteButton 
-                    upvotes={problem.upvoteCount || 0} 
+                    upvotes={problem.upvotes || 0} 
                     className="bg-white/90 backdrop-blur-sm" 
                   />
                 </div>
@@ -176,17 +206,17 @@ const Problems = () => {
                 </p>
                 
                 <div className="flex items-center justify-between text-sm text-vj-muted pt-4 border-t border-vj-border/50">
-                  <span>by {problem.author?.fullName || problem.author?.firstName + ' ' + problem.author?.lastName}</span>
+                  <span>by {problem.profiles?.full_name || problem.profiles?.first_name + ' ' + problem.profiles?.last_name}</span>
                   <span>{problem.commentsCount || 0} comments</span>
                 </div>
                 
                 <div className="flex gap-3 pt-2">
-                  <Link to={`/problems/${problem._id}`} className="flex-1">
+                  <Link to={`/problems/${problem.id}`} className="flex-1">
                     <Button size="sm" className="w-full bg-problem-primary hover:bg-problem-primary/90 text-white">
                       View Details
                     </Button>
                   </Link>
-                  <Link to={`/ideas?problem=${problem._id}`} className="flex-1">
+                  <Link to={`/ideas?problem=${problem.id}`} className="flex-1">
                     <Button size="sm" variant="outline" className="w-full border-problem-primary/30 text-problem-primary hover:bg-problem-light">
                       View Ideas
                     </Button>

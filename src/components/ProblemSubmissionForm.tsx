@@ -7,9 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Plus, Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { problemsAPI } from "@/lib/api";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProblemFormData {
   title: string;
@@ -30,13 +30,13 @@ const ProblemSubmissionForm = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const { toast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const queryClient = useQueryClient();
   
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<ProblemFormData>();
 
   const onSubmit = async (data: ProblemFormData) => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || !user) {
       toast({
         title: "Authentication required",
         description: "Please log in to submit a problem.",
@@ -47,18 +47,23 @@ const ProblemSubmissionForm = () => {
     
     try {
       const problemData = {
+        user_id: user.id,
         title: data.title,
         excerpt: data.excerpt,
         description: data.description,
-        background: data.background,
-        scalability: data.scalability,
-        marketSize: data.marketSize,
+        background: data.background || null,
+        scalability: data.scalability || null,
+        market_size: data.marketSize || null,
         competitors: data.competitors ? data.competitors.split(',').map(c => c.trim()) : [],
-        currentGaps: data.currentGaps,
+        current_gaps: data.currentGaps || null,
         tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : [],
       };
       
-      await problemsAPI.createProblem(problemData);
+      const { error } = await supabase
+        .from('problems')
+        .insert([problemData]);
+      
+      if (error) throw error;
       
       // Invalidate and refetch problems
       queryClient.invalidateQueries({ queryKey: ['problems'] });
@@ -73,9 +78,10 @@ const ProblemSubmissionForm = () => {
       setImagePreview(null);
       setOpen(false);
     } catch (error: any) {
+      console.error('Problem submission error:', error);
       toast({
         title: "Submission failed",
-        description: error.response?.data?.message || "Please try again later.",
+        description: error.message || "Please try again later.",
         variant: "destructive",
       });
     }

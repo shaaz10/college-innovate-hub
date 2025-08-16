@@ -14,6 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
+      problem_votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          problem_id: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          problem_id: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          problem_id?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "problem_votes_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      problems: {
+        Row: {
+          background: string | null
+          competitors: string[] | null
+          created_at: string | null
+          current_gaps: string | null
+          description: string
+          downvotes: number | null
+          excerpt: string
+          id: string
+          image_url: string | null
+          market_size: string | null
+          scalability: string | null
+          status: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+          upvotes: number | null
+          user_id: string
+        }
+        Insert: {
+          background?: string | null
+          competitors?: string[] | null
+          created_at?: string | null
+          current_gaps?: string | null
+          description: string
+          downvotes?: number | null
+          excerpt: string
+          id?: string
+          image_url?: string | null
+          market_size?: string | null
+          scalability?: string | null
+          status?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+          upvotes?: number | null
+          user_id: string
+        }
+        Update: {
+          background?: string | null
+          competitors?: string[] | null
+          created_at?: string | null
+          current_gaps?: string | null
+          description?: string
+          downvotes?: number | null
+          excerpt?: string
+          id?: string
+          image_url?: string | null
+          market_size?: string | null
+          scalability?: string | null
+          status?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+          upvotes?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
