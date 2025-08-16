@@ -18,11 +18,13 @@ const Problems = () => {
   const { data: problems = [], isLoading, error } = useQuery({
     queryKey: ['problems', searchTerm, selectedTags, sortBy],
     queryFn: async () => {
+      console.log('Fetching problems from Supabase...');
+      
       let query = supabase
         .from('problems')
         .select(`
           *,
-          profiles!problems_user_id_fkey (
+          profiles (
             first_name,
             last_name,
             full_name
@@ -52,7 +54,12 @@ const Problems = () => {
 
       const { data, error } = await query.limit(50);
       
-      if (error) throw error;
+      console.log('Problems query result:', { data, error });
+      
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
       return data || [];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -162,7 +169,12 @@ const Problems = () => {
             ))
           ) : error ? (
             <div className="col-span-full text-center py-16">
-              <p className="text-red-500 text-lg">Failed to load problems. Please try again.</p>
+              <p className="text-red-500 text-lg">Failed to load problems: {error.message}</p>
+              <p className="text-gray-500 text-sm mt-2">Check console for details</p>
+            </div>
+          ) : filteredProblems.length === 0 ? (
+            <div className="col-span-full text-center py-16">
+              <p className="text-vj-muted text-lg">No problems found. Be the first to submit one!</p>
             </div>
           ) : filteredProblems.map((problem: any) => (
             <div key={problem.id} className="vj-card-problem group">
