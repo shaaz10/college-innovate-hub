@@ -14,6 +14,205 @@ export type Database = {
   }
   public: {
     Tables: {
+      comment_votes: {
+        Row: {
+          comment_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_votes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          likes: number | null
+          parent_comment_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          likes?: number | null
+          parent_comment_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          likes?: number | null
+          parent_comment_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      idea_votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          idea_id: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          idea_id: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          idea_id?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_votes_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ideas: {
+        Row: {
+          attachments: string[] | null
+          contact: string
+          created_at: string | null
+          description: string
+          downvotes: number | null
+          id: string
+          mentor: string | null
+          problem_id: string
+          stage: number | null
+          title: string
+          updated_at: string | null
+          upvotes: number | null
+          user_id: string
+        }
+        Insert: {
+          attachments?: string[] | null
+          contact: string
+          created_at?: string | null
+          description: string
+          downvotes?: number | null
+          id?: string
+          mentor?: string | null
+          problem_id: string
+          stage?: number | null
+          title: string
+          updated_at?: string | null
+          upvotes?: number | null
+          user_id: string
+        }
+        Update: {
+          attachments?: string[] | null
+          contact?: string
+          created_at?: string | null
+          description?: string
+          downvotes?: number | null
+          id?: string
+          mentor?: string | null
+          problem_id?: string
+          stage?: number | null
+          title?: string
+          updated_at?: string | null
+          upvotes?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideas_problem_id_fkey"
+            columns: ["problem_id"]
+            isOneToOne: false
+            referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      milestones: {
+        Row: {
+          completed: boolean | null
+          completed_date: string | null
+          created_at: string | null
+          id: string
+          startup_id: string
+          target_date: string | null
+          title: string
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_date?: string | null
+          created_at?: string | null
+          id?: string
+          startup_id: string
+          target_date?: string | null
+          title: string
+        }
+        Update: {
+          completed?: boolean | null
+          completed_date?: string | null
+          created_at?: string | null
+          id?: string
+          startup_id?: string
+          target_date?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestones_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       problem_votes: {
         Row: {
           created_at: string | null
@@ -151,6 +350,113 @@ export type Database = {
           social_links?: Json | null
           university?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      startup_votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          startup_id: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          startup_id: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          startup_id?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "startup_votes_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      startups: {
+        Row: {
+          created_at: string | null
+          description: string
+          funding_status: string | null
+          id: string
+          name: string
+          one_pager_url: string | null
+          schemes: string[] | null
+          stage: number | null
+          updated_at: string | null
+          upvotes: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          funding_status?: string | null
+          id?: string
+          name: string
+          one_pager_url?: string | null
+          schemes?: string[] | null
+          stage?: number | null
+          updated_at?: string | null
+          upvotes?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          funding_status?: string | null
+          id?: string
+          name?: string
+          one_pager_url?: string | null
+          schemes?: string[] | null
+          stage?: number | null
+          updated_at?: string | null
+          upvotes?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      team_members: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string
+          entity_id: string
+          entity_type: string
+          id: string
+          name: string
+          role: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          name: string
+          role: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          name?: string
+          role?: string
         }
         Relationships: []
       }
