@@ -8,7 +8,7 @@ import ThemeToggle from "./ThemeToggle";
 
 const Navbar = () => {
   const location = useLocation();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, user, profile, logout } = useAuth();
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -64,9 +64,9 @@ const Navbar = () => {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user?.avatar} alt={user?.fullName} />
+                        <AvatarImage src={profile?.avatar_url || ''} alt={profile?.full_name || ''} />
                         <AvatarFallback>
-                          {user?.firstName?.[0]}{user?.lastName?.[0]}
+                          {profile?.first_name?.[0]}{profile?.last_name?.[0]}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
@@ -74,7 +74,7 @@ const Navbar = () => {
                   <DropdownMenuContent className="w-56" align="end" forceMount>
                     <div className="flex items-center justify-start gap-2 p-2">
                       <div className="flex flex-col space-y-1 leading-none">
-                        <p className="font-medium">{user?.fullName}</p>
+                        <p className="font-medium">{profile?.full_name}</p>
                         <p className="w-[200px] truncate text-sm text-muted-foreground">
                           {user?.email}
                         </p>
